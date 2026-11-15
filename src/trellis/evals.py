@@ -4,7 +4,7 @@ import json
 import sqlite3
 from collections import defaultdict
 
-from trellis import catalogue, db, match, traits, works
+from trellis import catalogue, db, traits, works
 from trellis.config import Settings
 
 # Well-known works across every kind, chosen so that real cross-media links exist
@@ -47,11 +47,10 @@ def resolve_eval_works(conn: sqlite3.Connection, s: Settings, items: list[tuple]
     out = []
     for kind, title, creator, year in items:
         try:
-            cands = catalogue.search(kind, title, s)
+            hit = catalogue.find_match(kind, title, creator, year, s)
         except catalogue.ProviderError as e:
             log(f"  ! {title}: {e}")
             continue
-        hit = match.best_match(title, year, creator, cands)
         if hit is None:
             log(f"  ! {title}: no catalogue match")
             continue

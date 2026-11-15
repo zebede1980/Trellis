@@ -68,6 +68,20 @@ class MusicBrainz:
                                  blurb="Artist" + (f" · {a['disambiguation']}" if a.get("disambiguation") else "")))
         return out
 
+    def find(self, title: str, creator: str | None, year: int | None) -> list[Candidate]:
+        """Targeted lookup for matching a known title: fielded query on title and artist."""
+        def phrase(s: str) -> str:
+            return '"' + s.replace(chr(92), ' ').replace('"', ' ') + '"'
+
+        q = f"releasegroup:{phrase(title)}"
+        if creator:
+            q += f" AND artist:{phrase(creator)}"
+        groups = _get("/release-group/", query=q, limit=10).get("release-groups", [])
+        return [Candidate(source=self.source, source_id=f"rg:{g['id']}", title=g.get("title") or "?",
+                          creators=[_credit(g.get("artist-credit"))], year=year_of(g.get("first-release-date")),
+                          cover_url=_cover(g["id"]), url=f"https://musicbrainz.org/release-group/{g['id']}")
+                for g in groups]
+
     def fetch(self, source_id: str) -> WorkData:
         typ, _, mbid = source_id.partition(":")
         if typ not in ("rg", "artist") or not _MBID.match(mbid):

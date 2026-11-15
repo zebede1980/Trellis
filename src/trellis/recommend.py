@@ -188,6 +188,20 @@ def make_validator(boards: list[dict], entry_ids: set[int], mode: str):
     return validate
 
 
+def interleave(ideas: list[dict]) -> list[dict]:
+    """Round-robin across boards, keeping the model's order within each board, so the KEEP cut-off doesn't
+    starve the boards the model happened to list last."""
+    by_board: dict[int, list[dict]] = {}
+    for x in ideas:
+        by_board.setdefault(x["board_id"], []).append(x)
+    out, queues = [], list(by_board.values())
+    while any(queues):
+        for q in queues:
+            if q:
+                out.append(q.pop(0))
+    return out
+
+
 # --------------------------------------------------------------------------- matching
 
 def _brave_url(s: Settings, title: str, creator: str | None) -> str | None:
@@ -214,11 +228,10 @@ def resolve(conn: sqlite3.Connection, s: Settings, board: dict, idea: dict) -> t
                                source_id=sid, verified=url is not None)
         return wid, "custom"
     try:
-        cands = catalogue.search(board["kind"], title, s)
+        hit = catalogue.find_match(board["kind"], title, creator, year, s)
     except catalogue.ProviderError as e:
         log.info("catalogue search failed for %r: %s", title, e)
         return None, "search_failed"
-    hit = match.best_match(title, year, creator, cands)
     if hit is None:
         return None, "unmatched"
     try:
@@ -257,7 +270,7 @@ def run(conn: sqlite3.Connection, s: Settings, user_id: int, scope: dict, *, dry
                             messages=[{"role": "system", "content": SYSTEM.format(mode_rules=MODE_RULES[mode])},
                                       {"role": "user", "content": json.dumps(user_msg, ensure_ascii=False)}],
                             validate=make_validator(boards, entry_ids, mode))
-        ideas = obj["suggestions"]
+        ideas = interleave(obj["suggestions"])
         stats["returned"] = len(ideas)
         by_board = {b["board_id"]: b for b in boards}
         have = {r[0] for r in conn.execute("SELECT work_id FROM entry WHERE user_id = ? UNION "

@@ -51,4 +51,20 @@ def search(kind: str, q: str, s: Settings, hint: str | None = None) -> list[Cand
     return out
 
 
+def find_match(kind: str, title: str, creator: str | None, year: int | None, s: Settings) -> Candidate | None:
+    """The catalogue record for a known title, or None. Plain search first, then the provider's targeted lookup
+    (fielded title + creator) when it has one."""
+    from trellis import match
+
+    hit = match.best_match(title, year, creator, search(kind, title, s))
+    if hit is not None:
+        return hit
+    for p in providers_for(kind, s):
+        if hasattr(p, "find"):
+            hit = match.best_match(title, year, creator, p.find(title, creator, year))
+            if hit is not None:
+                return hit
+    return None
+
+
 __all__ = ["Candidate", "WorkData", "ProviderError", "providers_for", "provider", "search"]

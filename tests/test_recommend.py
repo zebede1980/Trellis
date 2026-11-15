@@ -123,3 +123,9 @@ def test_cross_user_suggestions(two_clients, conn, settings, fake_llm):
     assert b.post(f"/api/suggestions/{sid}/act", json={"action": "want"}).status_code == 404
     assert b.get(f"/api/jobs/{job_id}").status_code == 404
     assert b.post("/api/recommend", json={"mode": "board", "board_id": boards(a)["book"]}).status_code == 404
+
+
+def test_interleave():
+    ideas = [{"board_id": 1, "t": "a"}, {"board_id": 1, "t": "b"}, {"board_id": 2, "t": "c"}, {"board_id": 3, "t": "d"},
+             {"board_id": 2, "t": "e"}]
+    assert [x["t"] for x in recommend.interleave(ideas)] == ["a", "c", "d", "b", "e"]

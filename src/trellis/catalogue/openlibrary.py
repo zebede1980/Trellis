@@ -17,11 +17,13 @@ def _cover(cover_id) -> str | None:
 class OpenLibrary:
     source = "openlibrary"
 
-    def search(self, q: str) -> list[Candidate]:
+    def search(self, q: str, **fielded) -> list[Candidate]:
         _limit.wait()
+        params = {"q": q} if q else {}
         with client() as c:
             r = c.get(f"{BASE}/search.json", params={
-                "q": q, "limit": 10, "fields": "key,title,author_name,first_publish_year,cover_i,edition_count"})
+                **params, **fielded, "limit": 10,
+                "fields": "key,title,author_name,first_publish_year,cover_i,edition_count"})
         if r.status_code != 200:
             raise ProviderError(f"Open Library search failed ({r.status_code})")
         out = []
@@ -33,6 +35,9 @@ class OpenLibrary:
                                  creators=(d.get("author_name") or [])[:3], year=d.get("first_publish_year"),
                                  cover_url=_cover(d.get("cover_i")), url=f"{BASE}/works/{key}"))
         return out
+
+    def find(self, title: str, creator: str | None, year: int | None) -> list[Candidate]:
+        return self.search("", title=title, **({"author": creator} if creator else {}))
 
     def fetch(self, source_id: str, _hops: int = 0) -> WorkData:
         with client() as c:
@@ -59,7 +64,11 @@ class OpenLibrary:
                     if isinstance(s, str) and not any(n in s.lower() for n in _NOISE) and len(s) < 60]
         covers = [c for c in (w.get("covers") or []) if isinstance(c, int) and c > 0]
         key = w.get("key", f"/works/{source_id}")
+        year = year_of(w.get("first_publish_date"))
+        if year is None:   # many work records lack it; the search index has first_publish_year
+            hit = next(iter(self.search(f"key:{key}")), None)
+            year = hit.year if hit else None
         return WorkData(source=self.source, source_id=key.removeprefix("/works/"), title=w.get("title") or "?",
-                        creators=authors, year=year_of(w.get("first_publish_date")),
+                        creators=authors, year=year,
                         cover_url=_cover(covers[0] if covers else None), url=f"{BASE}{key}",
                         summary=clip(desc), raw_tags=dedupe(subjects, 25))
