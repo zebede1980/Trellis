@@ -11,7 +11,7 @@ Plan: `C:\Users\joebl\.claude\plans\i-want-to-create-zazzy-puffin.md`. Last upda
 | 1 Skeleton + deploy | Done. ARM64 build fine. NPM host + Let's Encrypt cert created directly (backup of `npm_data` at `~/DockerSource/_backup_npm_before_trellis_20261115-080525.tgz`). |
 | 2 Accounts + boards | Done. Prod admin `joe` created; temp password in `~/DockerSource/trellis/initial-admin.txt` on the server. |
 | 3 Add things | Done. Open Library, TMDB, MusicBrainz live; Wikidata (films/games fallback), TVmaze (TV fallback), IGDB (mocked only). |
-| 4 Themes | Built. **Gate pending: your review** (see below). |
+| 4 Themes | Built. Tag eval signed off (Haiku kept). **Gate pending: seed vocabulary review** (see below). |
 | 5 Tree | Done. Accordion (phone) + Cytoscape map (desktop ≥900px), side panel, theme pages, group by board. |
 | 6 Recommendations | Built + one real run. **Gate pending: rate 20 suggestions.** |
 | 7 Custom boards | Built (Brave search + LLM lookup, "add exactly what I typed", unverified badges). **Not tried against the real LLM** (budget). |
@@ -34,7 +34,7 @@ Plan: `C:\Users\joebl\.claude\plans\i-want-to-create-zazzy-puffin.md`. Last upda
   Odd ones: Left Hand of Darkness "deep-space", The Last of Us "horror" (one run each)
 - 1 validation retry (a work came back with 10 traits)
 
-Recommendation: keep Haiku. Production tags each work once and stores it, so run-to-run wobble shows up as which of
+**Decision (2026-11-15, you): keep Haiku.** No Sonnet comparison. Production tags each work once and stores it, so run-to-run wobble shows up as which of
 two near-synonyms gets picked, and Admin → Themes → Suggest merges cleans those up. A Sonnet comparison is ≈12 more calls.
 Full output is not committed; rerun the command to reproduce.
 
