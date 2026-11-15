@@ -34,6 +34,18 @@ def _flag(name: str, default: str = "0") -> bool:
     return os.environ.get(name, default).strip().lower() in ("1", "true", "yes", "on")
 
 
+def load_dotenv(path: Path = Path(".env")) -> None:
+    """Local runs only: fill os.environ from ./.env without overriding real environment variables.
+    (Docker passes the same file via env_file.)"""
+    if not path.is_file():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+
+
 def load() -> Settings:
     return Settings(
         data_dir=Path(os.environ.get("TRELLIS_DATA_DIR", "data")).resolve(),

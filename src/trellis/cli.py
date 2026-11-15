@@ -14,7 +14,9 @@ def _open():
     return s, conn
 
 
-def _ask_password(prompt: str) -> str:
+def _ask_password(prompt: str, from_stdin: bool = False) -> str:
+    if from_stdin:
+        return sys.stdin.readline().rstrip("\r\n")
     pw = getpass.getpass(prompt)
     if pw != getpass.getpass("again: "):
         raise SystemExit("passwords did not match")
@@ -26,7 +28,7 @@ def cmd_user_add(args):
 
     _, conn = _open()
     try:
-        uid = auth.create_user(conn, args.username, _ask_password(f"password for {args.username}: "),
+        uid = auth.create_user(conn, args.username, _ask_password(f"password for {args.username}: ", args.password_stdin),
                                is_admin=args.admin, display_name=args.display_name)
     except (ValueError, sqlite3.IntegrityError) as e:
         raise SystemExit(f"error: {e}")
@@ -41,7 +43,7 @@ def cmd_user_passwd(args):
     if row is None:
         raise SystemExit(f"no user {args.username}")
     try:
-        auth.set_password(conn, row[0], _ask_password(f"new password for {args.username}: "))
+        auth.set_password(conn, row[0], _ask_password(f"new password for {args.username}: ", args.password_stdin))
     except ValueError as e:
         raise SystemExit(f"error: {e}")
     print("password updated")
@@ -63,6 +65,7 @@ def cmd_serve(args):
 
 
 def main(argv=None):
+    config.load_dotenv()
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     p = argparse.ArgumentParser(prog="trellis")
     sub = p.add_subparsers(required=True)
@@ -77,9 +80,11 @@ def main(argv=None):
     sp.add_argument("username")
     sp.add_argument("--admin", action="store_true")
     sp.add_argument("--display-name")
+    sp.add_argument("--password-stdin", action="store_true", help="read the password from stdin (for scripts)")
     sp.set_defaults(fn=cmd_user_add)
     sp = up.add_parser("passwd", help="reset a user's password (prompts)")
     sp.add_argument("username")
+    sp.add_argument("--password-stdin", action="store_true")
     sp.set_defaults(fn=cmd_user_passwd)
     up.add_parser("list").set_defaults(fn=cmd_user_list)
 
