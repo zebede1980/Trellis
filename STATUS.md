@@ -24,16 +24,19 @@ Plan: `C:\Users\joebl\.claude\plans\i-want-to-create-zazzy-puffin.md`. Last upda
 `src/trellis/seed_traits.json`: 90 themes across theme/tone/setting/style/genre/medium. Check the grain
 ("political intrigue", not "politics"). Edit the file before many works are tagged; renames later go through Admin → Themes.
 
-### Tag eval (Stage 4) — mini run only
-`trellis tag-eval --limit 10 --runs 2` with `anthropic/claude-haiku-5.5` (9 works resolved):
-- run-to-run overlap **0.60** (target 0.70)
-- invented: alien-planet, desert-planet, first-contact, metroidvania, technological-alienation (reasonable grain)
-- spanning ≥2 kinds: 14 of 49 traits (0.29; sample too small to judge against the 0.5 target)
-- one oddity: The Expanse tagged "miniseries"
+### Tag eval (Stage 4) — full run, 2026-11-15
+`trellis tag-eval` (30 works, 2 runs, batch 5) with `anthropic/claude-haiku-5.5`; 29 resolved (Blackstar, see open items):
+- run-to-run overlap **0.68** (target 0.70; the mini run before the temperature-0 change was 0.60)
+- spanning ≥2 kinds: **49 of 79 traits (0.62)**, target 0.5 met
+- invented (12, sensible grain): childhood-trauma, desert-planet, first-contact, gender-identity, labyrinth,
+  metroidvania, neo-noir, pastoral-life, racial-injustice, suburbia, surreal-house, underground-kingdom
+- misses are mostly near-synonym swaps (character-driven vs moral-ambiguity, epic vs ensemble-cast), not wrong tags.
+  Odd ones: Left Hand of Darkness "deep-space", The Last of Us "horror" (one run each)
+- 1 validation retry (a work came back with 10 traits)
 
-Since then: temperature 0 for tagging, medium labels only when literally true, bigger token budget. Not re-measured.
-Suggested next step: `trellis tag-eval` on all 30 works (≈12 calls at batch 5), and compare with
-`--model anthropic/claude-sonnet-5.5` if overlap stays under 0.7.
+Recommendation: keep Haiku. Production tags each work once and stores it, so run-to-run wobble shows up as which of
+two near-synonyms gets picked, and Admin → Themes → Suggest merges cleans those up. A Sonnet comparison is ≈12 more calls.
+Full output is not committed; rerun the command to reproduce.
 
 ### Recommendations (Stage 6) — one real run
 `trellis rec-eval dev --mode all` on a 17-entry demo profile (locally): 14 ideas, the first 8 all verified against
@@ -49,9 +52,12 @@ boards before verification. Gate still needs you to rate 20 suggestions on your 
 | tag-eval (2 batches × 2 runs + 2 validation retries) | 6 |
 | tagging the demo profile: replies truncated at max_tokens, then job retries multiplied it (bug, now fixed) | 10 |
 | rec-eval run (1 Sonnet recommend + 2 Haiku tag) | 3 |
-| **Total** | **19** |
+| **First block total (of 20)** | **19** |
+| Second block (you authorised 15): full tag-eval, 12 calls + 1 validation retry | 13 |
+| **Grand total** | **32** |
 
-Tokens: 54.6k in / 44.1k out, all Haiku except the one Sonnet call; roughly US$0.05 at list prices. No further calls made. The deployed app *will* call the
+First block tokens: 54.6k in / 44.1k out, all Haiku except the one Sonnet call; roughly US$0.05 at list prices.
+Second block: 34.2k in / 34.7k out, all Haiku. 2 of the 15 left; no further calls made. The deployed app *will* call the
 LLM when you use it (tagging on add, Discover runs); `LLM_DAILY_CAP` (default 400/day) and `REC_RUNS_PER_DAY` (10)
 bound it.
 
