@@ -4,10 +4,14 @@
 
   let { tree, onselect }: { tree: Tree; onselect: (s: Selection) => void } = $props();
 
-  const EXPANDED_BY_DEFAULT = 8;
+  const EXPANDED_BY_DEFAULT = 5;
+  const VISIBLE_THEMES = 12;
+  const MIN_READABLE_ZOOM = 0.6;
   let el: HTMLDivElement | undefined = $state();
   let cy: Core | null = null;
   let expanded = $state<Set<string>>(new Set());
+  let showAll = $state(false);
+  let focusId: string | null = null;
   let initialisedFor: Tree | null = null;
 
   function short(s: string, n = 26) {
@@ -21,9 +25,14 @@
   function elements(t: Tree, open: Set<string>): ElementDefinition[] {
     const els: ElementDefinition[] = [{ data: { id: 'root', label: 'You', kind: 'root' } }];
     const maxAff = Math.max(1, ...t.branches.map((b) => Math.abs(b.affinity ?? 0)));
-    const branches: Branch[] = [...t.branches];
+    const hidden = showAll ? 0 : Math.max(0, t.branches.length - VISIBLE_THEMES);
+    const branches: Branch[] = hidden ? t.branches.slice(0, VISIBLE_THEMES) : [...t.branches];
     if (t.other.length) branches.push({ id: 'other', name: 'Other threads', entries: t.other, suggestions: [] });
-    for (const b of branches) {
+    if (hidden) {
+      els.push({ data: { id: 'more', label: `+ ${hidden} more themes`, kind: 'more' }, classes: 'collapsed' });
+      els.push({ data: { id: 'root-more', source: 'root', target: 'more', w: 1 } });
+    }
+    for (const b of [...branches].reverse()) {   // dagre stacks later nodes on top
       const isOpen = open.has(b.id);
       const n = b.entries.length + b.suggestions.length;
       els.push({
@@ -66,6 +75,7 @@
         { selector: 'node', style: { label: 'data(label)', 'font-size': 11, color: text, 'text-valign': 'center', 'text-halign': 'right', 'text-margin-x': 6, width: 14, height: 14, 'background-color': 'data(colour)', 'border-width': 0 } },
         { selector: 'node[kind = "root"]', style: { width: 34, height: 34, 'background-color': accent, 'font-size': 14, 'font-weight': 'bold', 'text-halign': 'center', 'text-valign': 'bottom', 'text-margin-y': 6, 'text-margin-x': 0 } },
         { selector: 'node[kind = "branch"]', style: { shape: 'round-rectangle', width: 'label', height: 26, padding: '8px', 'background-color': surface, 'border-width': 1.5, 'border-color': accent, 'text-halign': 'center', 'text-margin-x': 0, 'font-size': 12, 'font-weight': 'bold' } },
+        { selector: 'node[kind = "more"]', style: { shape: 'round-rectangle', width: 'label', height: 24, padding: '6px', 'background-color': surface, 'border-width': 1, 'border-style': 'dashed', 'border-color': muted, color: muted, 'text-halign': 'center', 'text-margin-x': 0 } },
         { selector: 'node.collapsed', style: { 'border-color': muted, color: muted } },
         { selector: 'node.newb', style: { 'border-style': 'dashed' } },
         { selector: 'node.neg', style: { 'border-color': danger } },
@@ -75,8 +85,20 @@
         { selector: 'edge', style: { width: 'data(w)', 'line-color': line, 'curve-style': 'taxi', 'taxi-direction': 'rightward', 'taxi-turn': '40px' } },
         { selector: 'edge.newb, edge.sugg', style: { 'line-style': 'dashed' } }
       ],
-      layout: { name: 'dagre', rankDir: 'LR', nodeSep: 6, rankSep: 90, edgeSep: 4 } as any
+      layout: { name: 'dagre', rankDir: 'LR', nodeSep: 6, rankSep: 90, edgeSep: 4, fit: false } as any
     });
+    // Fit if that stays readable; otherwise zoom to a readable level showing the top-left (strongest themes),
+    // or centred on the branch just tapped.
+    cy.fit(undefined, 30);
+    if (cy.zoom() < MIN_READABLE_ZOOM) {
+      cy.zoom(MIN_READABLE_ZOOM);
+      if (focusId) {
+        cy.center(cy.$id(focusId));
+      } else {
+        const bb = cy.elements().boundingBox();
+        cy.pan({ x: 30 - bb.x1 * MIN_READABLE_ZOOM, y: 20 - bb.y1 * MIN_READABLE_ZOOM });
+      }
+    }
 
     cy.on('tap', 'node', (evt) => {
       const n = evt.target;
@@ -87,7 +109,11 @@
         // the same item sits under several themes: highlight every copy
         cy!.nodes().filter((m) => m.data('kind') === kind && m.data('ref') === ref).addClass('hl');
         onselect({ type: kind, id: ref });
+      } else if (kind === 'more') {
+        focusId = null;
+        showAll = true;
       } else if (kind === 'branch') {
+        focusId = n.id();
         const id = n.id();
         const b = t.branches.find((x) => x.id === id);
         const next = new Set(expanded);

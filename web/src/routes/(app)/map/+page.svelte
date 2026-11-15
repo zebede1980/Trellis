@@ -85,7 +85,8 @@
   .seg button { min-height: 36px; padding: 0 0.8rem; border: 0; background: var(--surface); }
   .seg button.on { background: var(--accent); color: var(--accent-ink); }
   .layout { display: grid; gap: 1rem; }
-  .layout.withpanel { grid-template-columns: 1fr 340px; }
+  .layout.withpanel { grid-template-columns: minmax(0, 1fr) 340px; }
+  .main { min-width: 0; }
   .canvas { height: calc(100dvh - 170px); }
   .side { position: sticky; top: 1rem; max-height: calc(100dvh - 2rem); display: grid; }
   .legend { margin: 0.4rem 0 0; }
