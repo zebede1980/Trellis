@@ -1,0 +1,10 @@
+data/
+.venv/
+__pycache__/
+*.pyc
+.env
+.pytest_cache/
+.claude/settings.local.json
+web/node_modules/
+web/build/
+web/.svelte-kit/

@@ -1,0 +1,32 @@
+[project]
+name = "trellis"
+version = "0.1.0"
+description = "Cross-media interest tracker with AI recommendations, linked by shared themes"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "httpx>=0.27",
+    "pydantic>=2.7",
+    "itsdangerous>=2.2",
+    "python-multipart>=0.0.9",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=8",
+]
+
+[project.scripts]
+trellis = "trellis.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/trellis"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

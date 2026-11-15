@@ -1,0 +1,21 @@
+services:
+  web:
+    build: .
+    container_name: trellis-web
+    image: trellis:latest
+    init: true                      # tini as PID 1, so `docker stop` signals reach Python
+    env_file: .env
+    environment:
+      TRELLIS_SECURE_COOKIES: "1"   # nginx terminates TLS, so cookies are HTTPS-only
+    volumes:
+      - ./data:/data
+    ports:
+      # Host-only, for direct checks. nginx reaches it as trellis-web:8000 over nginx-proxy-nw.
+      - "127.0.0.1:8090:8000"
+    networks:
+      - nginx-proxy-nw
+    restart: unless-stopped
+
+networks:
+  nginx-proxy-nw:
+    external: true
