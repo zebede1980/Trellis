@@ -106,3 +106,12 @@ def test_merge(conn, settings, fake_llm):
                              (wid,)).fetchall())
     assert "epic" not in rows and rows["political-intrigue"] == 0.9
     assert traits.canonical(conn, tid("epic")) == tid("political-intrigue")
+
+
+def test_tag_job_failure_is_not_retried(conn, settings, fake_llm, alice):
+    bid = alice.get("/api/boards").json()[0]["board_id"]
+    alice.post("/api/entries", json={"board_id": bid, "manual": {"title": "Hyperion"}})
+    fake_llm.queue += ["{broken", "{still broken"]
+    jobs.run_pending(conn, settings)
+    assert len(fake_llm.calls) == 2
+    assert conn.execute("SELECT status FROM job").fetchone()[0] == "failed"

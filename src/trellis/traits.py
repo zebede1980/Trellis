@@ -127,7 +127,7 @@ Rules:
 - Format/medium labels (open world, miniseries, concept album...) only when literally true of the work.
 - Use what you know about the work plus the catalogue tags given. If you do not know the work, tag conservatively from the summary and tags.
 
-Return ONLY JSON:
+Return ONLY compact JSON (no markdown, no commentary, no extra keys):
 {"works": [{"id": <id>, "traits": [{"slug": "found-family", "weight": 0.9}, {"new": {"name": "generation ship", "facet": "setting", "description": "one line"}, "weight": 0.6}]}]}"""
 
 
@@ -221,7 +221,7 @@ def tag_works(conn: sqlite3.Connection, s: Settings, ws: list[sqlite3.Row], *, m
     vocab = [dict(t) for t in vocabulary(conn)]
     ids = [w["work_id"] for w in ws]
     obj = llm.call_json(conn, s, purpose="tag", model=model or s.tag_model, messages=build_messages(vocab, ws, board_hints),
-                        validate=make_validator(vocab, ids), user_id=user_id, max_tokens=400 + 400 * len(ws),
+                        validate=make_validator(vocab, ids), user_id=user_id, max_tokens=1000 + 900 * len(ws),
                         temperature=0.0)
     out: dict[int, list[tuple[str, float]]] = {}
     by_id = {w["id"]: w for w in obj["works"] if isinstance(w, dict)}
@@ -266,7 +266,11 @@ def job_tag(conn: sqlite3.Connection, s: Settings, payload: dict, user_id: int |
     hints = {r[0]: r[1] for r in conn.execute(
         """SELECT e.work_id, b.custom_hint FROM entry e JOIN board b ON b.board_id = e.board_id
            WHERE b.kind = 'custom' AND e.work_id IN (%s)""" % ",".join("?" * len(ws)), [w["work_id"] for w in ws])}
-    tag_works(conn, s, ws, user_id=user_id, board_hints=hints)
+    try:
+        tag_works(conn, s, ws, user_id=user_id, board_hints=hints)
+    except llm.LLMError as e:
+        # Each attempt already re-asked once; job-level retries would just triple the spend.
+        raise jobs.PermanentError(str(e)) from e
     remaining = conn.execute(
         """SELECT 1 FROM work w WHERE w.tagged_at IS NULL AND EXISTS (SELECT 1 FROM entry e WHERE e.work_id = w.work_id)
            LIMIT 1""").fetchone()

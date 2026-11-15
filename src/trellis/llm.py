@@ -24,6 +24,10 @@ class LLMError(Exception):
     pass
 
 
+class Truncated(LLMError):
+    """The reply hit max_tokens. Re-asking with the same budget would fail the same way."""
+
+
 def extract_json(text: str) -> dict:
     text = (text or "").strip()
     text = re.sub(r"^<think>.*?</think>\s*", "", text, flags=re.S)
@@ -70,7 +74,10 @@ def call_llm(conn: sqlite3.Connection, s: Settings, *, purpose: str, model: str,
             r.raise_for_status()
             body = r.json()
             usage = body.get("usage") or {}
-            text = body["choices"][0]["message"]["content"] or ""
+            choice = body["choices"][0]
+            text = choice["message"]["content"] or ""
+            if choice.get("finish_reason") == "length":
+                raise Truncated(f"reply cut off at max_tokens={max_tokens} ({len(text)} chars)")
     except Exception as e:
         _log(conn, user_id, purpose, model, usage, int((time.monotonic() - t0) * 1000), False, f"{type(e).__name__}: {e}")
         raise
@@ -94,6 +101,7 @@ def call_json(conn: sqlite3.Connection, s: Settings, *, purpose: str, model: str
             errors = validate(obj)
         except (ValueError, TypeError, KeyError) as e:
             obj, errors = None, [f"could not parse a JSON object: {e}"]
+            log.warning("%s unparseable reply (%d chars), tail: %r", purpose, len(raw), raw[-200:])
         if obj is not None and not errors:
             return obj
         log.warning("%s attempt %d failed validation: %s", purpose, attempt + 1, errors[:5])

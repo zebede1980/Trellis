@@ -109,6 +109,11 @@ class Worker:
     def start(self) -> None:
         conn = db.connect(self.s.db_path)
         n = requeue_stale(conn)
+        # pick up works whose tagging failed earlier (one batch; the daily LLM cap bounds any repeat failures)
+        stale = conn.execute("""SELECT w.work_id FROM work w WHERE w.tagged_at IS NULL
+                                AND EXISTS (SELECT 1 FROM entry e WHERE e.work_id = w.work_id) LIMIT 1""").fetchone()
+        if stale:
+            ensure_tagged(conn, stale[0])
         conn.close()
         if n:
             log.info("re-queued %d interrupted jobs", n)
