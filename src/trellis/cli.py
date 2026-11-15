@@ -64,6 +64,25 @@ def cmd_tag_eval(args):
     evals.tag_eval(s, models=models, runs=args.runs, limit=args.limit, batch=args.batch)
 
 
+def cmd_rec_eval(args):
+    import json
+
+    from trellis import recommend, traits  # noqa: F401  (registers job handlers)
+
+    s, conn = _open()
+    row = conn.execute("SELECT user_id FROM app_user WHERE username = ?", (args.username.lower(),)).fetchone()
+    if row is None:
+        raise SystemExit(f"no user {args.username}")
+    scope = {"mode": args.mode}
+    if args.trait:
+        scope["trait_id"] = args.trait
+    if args.board:
+        scope["board_id"] = args.board
+    print(f"model {s.rec_model}, scope {scope}{' (dry run: nothing stored)' if args.dry_run else ''}")
+    stats = recommend.run(conn, s, row[0], scope, dry_run=args.dry_run, log_fn=print)
+    print(json.dumps(stats, indent=1))
+
+
 def cmd_serve(args):
     import uvicorn
 
@@ -102,6 +121,14 @@ def main(argv=None):
     sp.add_argument("--limit", type=int, help="only the first N works, spread across kinds")
     sp.add_argument("--batch", type=int, default=5, help="works per LLM call")
     sp.set_defaults(fn=cmd_tag_eval)
+
+    sp = sub.add_parser("rec-eval", help="run one recommendation pass for a user and print what was kept/dropped")
+    sp.add_argument("username")
+    sp.add_argument("--mode", default="all", choices=["all", "trait", "board", "explore"])
+    sp.add_argument("--trait", type=int)
+    sp.add_argument("--board", type=int)
+    sp.add_argument("--dry-run", action="store_true", help="don't store suggestions (the LLM call is still made)")
+    sp.set_defaults(fn=cmd_rec_eval)
 
     args = p.parse_args(argv)
     args.fn(args)
