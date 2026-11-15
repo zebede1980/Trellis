@@ -57,6 +57,14 @@
     </form>
   {/if}
 
+  {#if boards && boards.every((b) => !b.n_done && !b.n_want)}
+    <div class="card intro">
+      <strong>Start here</strong>
+      <p class="small">Open a board and add a few things you've loved (and one or two you didn't), with a star rating and a line on why.
+        Trellis works out the themes that link them, draws your map, and once you've rated three or more, Discover can suggest what to try next.</p>
+    </div>
+  {/if}
+
   {#if boards === null}
     <div class="grid">{#each Array(5) as _}<div class="tile skeleton"></div>{/each}</div>
   {:else}
@@ -84,4 +92,6 @@
   .newboard button { margin-top: 1rem; }
   header h1 { margin: 0; }
   header { margin-bottom: 0.75rem; }
+  .intro { padding: 1rem; margin-bottom: 1rem; border-left: 4px solid var(--accent); }
+  .intro p { margin: 0.3rem 0 0; }
 </style>
