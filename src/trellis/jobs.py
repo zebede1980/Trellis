@@ -142,6 +142,7 @@ class Worker:
 def _load_handlers() -> None:
     # Importing registers the handlers via @handler.
     from trellis import recommend, traits  # noqa: F401
+    from trellis.api import admin  # noqa: F401
 
 
 def job_out(r: sqlite3.Row) -> dict:

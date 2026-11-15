@@ -1,3 +1,4 @@
+import mimetypes
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -7,7 +8,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from trellis import config, db, jobs, traits
 from trellis.auth import Throttle
-from trellis.api import auth as auth_api, boards as boards_api, entries as entries_api, suggestions as sugg_api, tree as tree_api
+from trellis.api import admin as admin_api, auth as auth_api, boards as boards_api, entries as entries_api, suggestions as sugg_api, tree as tree_api
 from trellis.api.deps import get_conn, require_xhr
 
 
@@ -35,7 +36,7 @@ def create_app(settings: config.Settings | None = None) -> FastAPI:
     app.add_middleware(SessionMiddleware, secret_key=settings.secret_key, same_site="lax",
                        max_age=60 * 60 * 24 * 60, https_only=settings.secure_cookies, session_cookie="trellis")
 
-    for r in (auth_api.router, boards_api.router, entries_api.router, tree_api.router, sugg_api.router):
+    for r in (auth_api.router, boards_api.router, entries_api.router, tree_api.router, sugg_api.router, admin_api.router):
         app.include_router(r)
 
     @app.get("/api/health")
@@ -44,6 +45,9 @@ def create_app(settings: config.Settings | None = None) -> FastAPI:
 
     _mount_frontend(app, settings.web_dir)
     return app
+
+
+mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 
 def _mount_frontend(app: FastAPI, web_dir: Path) -> None:
