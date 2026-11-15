@@ -70,3 +70,71 @@ export const KIND_LABEL: Record<Kind, string> = {
 export const KIND_NOUN: Record<Kind, string> = {
   book: 'book', film: 'film', tv: 'series', game: 'game', music: 'album', custom: 'thing'
 };
+
+export interface TreeEntry {
+  entry_id: number;
+  work_id: number;
+  title: string;
+  year: number | null;
+  creators: string[];
+  cover_url: string | null;
+  state: 'done' | 'want';
+  rating: number | null;
+  note: string | null;
+  board_id: number;
+  board_name: string;
+  board_colour: string;
+  kind: Kind;
+}
+
+export interface Suggestion {
+  suggestion_id: number;
+  work_id: number;
+  title: string;
+  year: number | null;
+  creators: string[];
+  cover_url: string | null;
+  reason: string;
+  score: number;
+  board_id: number;
+  board_name: string;
+  board_colour: string;
+  kind: Kind;
+  url: string | null;
+  verified: boolean;
+  is_new_branch: boolean;
+  traits?: { trait_id: number; name: string; facet: string }[];
+  sources?: { entry_id: number; title: string }[];
+  new_branch?: { trait_id: number; name: string; facet: string; description: string | null } | null;
+  status?: string;
+}
+
+export interface Branch {
+  id: string;
+  name: string;
+  trait_id?: number;
+  board_id?: number;
+  facet?: string;
+  description?: string | null;
+  colour?: string;
+  affinity?: number;
+  n?: number;
+  new_branch?: boolean;
+  entries: number[];
+  suggestions: number[];
+}
+
+export interface Tree {
+  group: 'theme' | 'board';
+  branches: Branch[];
+  other: number[];
+  entries: Record<string, TreeEntry>;
+  suggestions: Record<string, Suggestion>;
+  boards: { board_id: number; name: string; kind: Kind; colour: string }[];
+}
+
+export type Selection =
+  | { type: 'entry'; id: number }
+  | { type: 'suggestion'; id: number }
+  | { type: 'theme'; branch: Branch }
+  | null;
