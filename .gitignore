@@ -8,3 +8,5 @@ __pycache__/
 web/node_modules/
 web/build/
 web/.svelte-kit/
+backups/
+initial-admin.txt
