@@ -96,7 +96,7 @@ def call_json(conn: sqlite3.Connection, s: Settings, *, purpose: str, model: str
             obj, errors = None, [f"could not parse a JSON object: {e}"]
         if obj is not None and not errors:
             return obj
-        log.info("%s attempt %d failed validation: %s", purpose, attempt + 1, errors[:5])
+        log.warning("%s attempt %d failed validation: %s", purpose, attempt + 1, errors[:5])
         messages += [{"role": "assistant", "content": raw},
                      {"role": "user", "content": "That failed validation:\n- " + "\n- ".join(errors[:20])
                       + "\nFix these and return the full JSON object again, with no other text."}]

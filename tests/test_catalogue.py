@@ -54,6 +54,23 @@ def test_wikidata_game():
     assert w.cover_url and "Hollow Knight" in w.summary
 
 
+def test_wikidata_mul_label(monkeypatch):
+    import httpx
+    from conftest import fx, route
+    from trellis.catalogue import base
+
+    def handler(req):
+        if req.url.params.get("action") == "wbgetentities" and req.url.params.get("props", "").startswith("claims"):
+            d = fx("wd_entity.json")
+            e = d["entities"]["Q29300592"]
+            e["labels"] = {"mul": {"language": "mul", "value": "Hollow Knight"}}
+            return httpx.Response(200, json=d)
+        return route(req)
+
+    monkeypatch.setattr(base, "TRANSPORT", httpx.MockTransport(handler))
+    assert Wikidata("game").fetch("Q29300592").title == "Hollow Knight"
+
+
 def test_wikidata_film_filter():
     cs = Wikidata("film").search("the matrix")
     assert [c.source_id for c in cs][:1] == ["Q83495"]

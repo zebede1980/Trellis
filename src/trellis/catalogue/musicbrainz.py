@@ -5,6 +5,7 @@ when there is no art, so the frontend hides broken images.
 """
 
 import re
+import time
 
 from trellis.catalogue.base import Candidate, ProviderError, RateLimit, WorkData, client, dedupe, year_of
 
@@ -23,7 +24,9 @@ def _credit(ac: list[dict]) -> str:
 
 
 def _get(path: str, **params) -> dict:
-    for _ in range(2):
+    for attempt in range(3):
+        if attempt:
+            time.sleep(1.5 * attempt)
         _limit.wait()
         with client() as c:
             r = c.get(f"{BASE}{path}", params={**params, "fmt": "json"})

@@ -31,6 +31,12 @@ def _get(**params) -> dict:
     return r.json()
 
 
+def _label(entity: dict) -> str | None:
+    # Many items now carry only a language-neutral "mul" label.
+    labels = entity.get("labels", {})
+    return (labels.get("en") or labels.get("mul") or {}).get("value")
+
+
 class Wikidata:
     source = "wikidata"
 
@@ -55,7 +61,7 @@ class Wikidata:
         if not re.fullmatch(r"Q\d+", source_id):
             raise ProviderError(f"bad Wikidata id {source_id!r}")
         e = _get(action="wbgetentities", ids=source_id, props="claims|labels|descriptions|sitelinks/urls",
-                 sitefilter="enwiki", languages="en").get("entities", {}).get(source_id)
+                 sitefilter="enwiki", languages="en|mul").get("entities", {}).get(source_id)
         if not e or "missing" in e:
             raise ProviderError(f"Wikidata item {source_id} not found")
         claims = e.get("claims", {})
@@ -73,12 +79,12 @@ class Wikidata:
         labels = {}
         if creator_ids or genre_ids:
             ents = _get(action="wbgetentities", ids="|".join(dict.fromkeys(creator_ids + genre_ids)), props="labels",
-                        languages="en").get("entities", {})
-            labels = {k: (v.get("labels", {}).get("en") or {}).get("value") for k, v in ents.items()}
+                        languages="en|mul").get("entities", {})
+            labels = {k: _label(v) for k, v in ents.items()}
         years = [year_of((c["mainsnak"].get("datavalue") or {}).get("value", {}).get("time"))
                  for c in claims.get("P577", []) if c.get("mainsnak")]
         years = [y for y in years if y]
-        title = (e.get("labels", {}).get("en") or {}).get("value") or source_id
+        title = _label(e) or source_id
         desc = (e.get("descriptions", {}).get("en") or {}).get("value")
         enwiki = (e.get("sitelinks", {}).get("enwiki") or {})
         summary, cover, url = desc, None, enwiki.get("url") or f"https://www.wikidata.org/wiki/{source_id}"

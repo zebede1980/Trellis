@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "trellis",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "trellis", "serve", "--host", "127.0.0.1", "--port", "8000"],
+      "env": { "TRELLIS_WORKER": "0" },
+      "port": 8000
+    }
+  ]
+}

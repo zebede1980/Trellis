@@ -119,11 +119,12 @@ def merge(conn: sqlite3.Connection, from_id: int, into_id: int) -> None:
 SYSTEM = """You tag creative works (books, films, TV, games, music, and anything else) with themes from a shared vocabulary, so that a user's taste can be linked ACROSS media: a political-intrigue novel should share tags with a political-intrigue game.
 
 Rules:
-- Give each work 5 to 8 traits.
+- Give each work 6 to 8 traits (never fewer than 5, never more than 8).
 - At least 3 must come from the media-agnostic facets: theme, tone, setting, style. These are what connect different media, so favour them.
 - Strongly prefer existing vocabulary slugs. Only invent a trait ("new") when nothing in the vocabulary fits; at most 2 new per work.
 - A new trait must be at the same grain as the vocabulary: "political intrigue", not "politics" and not "Byzantine succession crises". Reusable across many works and media. Lower case.
 - weight is 0.1 to 1.0: how central the trait is to the work (1.0 = defining).
+- Format/medium labels (open world, miniseries, concept album...) only when literally true of the work.
 - Use what you know about the work plus the catalogue tags given. If you do not know the work, tag conservatively from the summary and tags.
 
 Return ONLY JSON:
@@ -220,8 +221,8 @@ def tag_works(conn: sqlite3.Connection, s: Settings, ws: list[sqlite3.Row], *, m
     vocab = [dict(t) for t in vocabulary(conn)]
     ids = [w["work_id"] for w in ws]
     obj = llm.call_json(conn, s, purpose="tag", model=model or s.tag_model, messages=build_messages(vocab, ws, board_hints),
-                        validate=make_validator(vocab, ids), user_id=user_id, max_tokens=300 + 350 * len(ws),
-                        temperature=0.2)
+                        validate=make_validator(vocab, ids), user_id=user_id, max_tokens=400 + 400 * len(ws),
+                        temperature=0.0)
     out: dict[int, list[tuple[str, float]]] = {}
     by_id = {w["id"]: w for w in obj["works"] if isinstance(w, dict)}
     for wid in ids:

@@ -56,6 +56,14 @@ def cmd_user_list(args):
               f"{'disabled' if r['disabled'] else '':<9} {r['created_at']}")
 
 
+def cmd_tag_eval(args):
+    from trellis import evals
+
+    s = config.load()
+    models = args.model or [s.tag_model]
+    evals.tag_eval(s, models=models, runs=args.runs, limit=args.limit, batch=args.batch)
+
+
 def cmd_serve(args):
     import uvicorn
 
@@ -87,6 +95,13 @@ def main(argv=None):
     sp.add_argument("--password-stdin", action="store_true")
     sp.set_defaults(fn=cmd_user_passwd)
     up.add_parser("list").set_defaults(fn=cmd_user_list)
+
+    sp = sub.add_parser("tag-eval", help="tag a fixed set of works repeatedly and report consistency")
+    sp.add_argument("--model", action="append", help="model id (repeat to compare); default TAG_MODEL")
+    sp.add_argument("--runs", type=int, default=2)
+    sp.add_argument("--limit", type=int, help="only the first N works, spread across kinds")
+    sp.add_argument("--batch", type=int, default=5, help="works per LLM call")
+    sp.set_defaults(fn=cmd_tag_eval)
 
     args = p.parse_args(argv)
     args.fn(args)
