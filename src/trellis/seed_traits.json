@@ -1,0 +1,452 @@
+[
+ {
+  "name": "found family",
+  "facet": "theme",
+  "description": "Strangers who become a family by choice"
+ },
+ {
+  "name": "political intrigue",
+  "facet": "theme",
+  "description": "Scheming, factions and power plays among the powerful"
+ },
+ {
+  "name": "coming of age",
+  "facet": "theme",
+  "description": "Growing up and finding out who you are"
+ },
+ {
+  "name": "redemption",
+  "facet": "theme",
+  "description": "A flawed person trying to make amends"
+ },
+ {
+  "name": "revenge",
+  "facet": "theme",
+  "description": "Wrongs repaid, and what it costs the avenger"
+ },
+ {
+  "name": "grief and loss",
+  "facet": "theme",
+  "description": "Living with the death or loss of someone or something"
+ },
+ {
+  "name": "identity",
+  "facet": "theme",
+  "description": "Who am I: self, belonging and reinvention"
+ },
+ {
+  "name": "moral ambiguity",
+  "facet": "theme",
+  "description": "No clean heroes; choices with no right answer"
+ },
+ {
+  "name": "power and corruption",
+  "facet": "theme",
+  "description": "How power is gained and how it rots people"
+ },
+ {
+  "name": "survival",
+  "facet": "theme",
+  "description": "Staying alive against hostile odds"
+ },
+ {
+  "name": "class and inequality",
+  "facet": "theme",
+  "description": "Rich and poor, privilege and the struggle between them"
+ },
+ {
+  "name": "isolation and loneliness",
+  "facet": "theme",
+  "description": "Being cut off from others, physically or emotionally"
+ },
+ {
+  "name": "love and romance",
+  "facet": "theme",
+  "description": "Falling in love and the shape of relationships"
+ },
+ {
+  "name": "friendship",
+  "facet": "theme",
+  "description": "Bonds between friends, tested and kept"
+ },
+ {
+  "name": "cost of war",
+  "facet": "theme",
+  "description": "War and what it does to people and places"
+ },
+ {
+  "name": "faith and belief",
+  "facet": "theme",
+  "description": "Religion, belief systems and doubt"
+ },
+ {
+  "name": "memory and the past",
+  "facet": "theme",
+  "description": "What we remember, forget, and what the past does to us"
+ },
+ {
+  "name": "artificial minds",
+  "facet": "theme",
+  "description": "AI, robots and what makes a mind a person"
+ },
+ {
+  "name": "empire and colonialism",
+  "facet": "theme",
+  "description": "Conquest, occupation and resistance"
+ },
+ {
+  "name": "humanity and nature",
+  "facet": "theme",
+  "description": "People against, within or in harmony with the natural world"
+ },
+ {
+  "name": "rebellion",
+  "facet": "theme",
+  "description": "Rising up against an authority or system"
+ },
+ {
+  "name": "the outsider",
+  "facet": "theme",
+  "description": "Someone who does not fit in and sees the world differently"
+ },
+ {
+  "name": "obsession",
+  "facet": "theme",
+  "description": "A consuming fixation and where it leads"
+ },
+ {
+  "name": "family secrets",
+  "facet": "theme",
+  "description": "Hidden histories inside a family"
+ },
+ {
+  "name": "ambition",
+  "facet": "theme",
+  "description": "Wanting more and what you will do to get it"
+ },
+ {
+  "name": "mortality",
+  "facet": "theme",
+  "description": "Facing death and the meaning of a finite life"
+ },
+ {
+  "name": "truth and deception",
+  "facet": "theme",
+  "description": "Lies, cons, secrets and who can be trusted"
+ },
+ {
+  "name": "sacrifice",
+  "facet": "theme",
+  "description": "Giving something up for others or a cause"
+ },
+ {
+  "name": "exploration and discovery",
+  "facet": "theme",
+  "description": "Venturing into the unknown"
+ },
+ {
+  "name": "environmental collapse",
+  "facet": "theme",
+  "description": "Climate, ecological ruin and its aftermath"
+ },
+ {
+  "name": "parenthood",
+  "facet": "theme",
+  "description": "Raising children and being a parent"
+ },
+ {
+  "name": "crime and justice",
+  "facet": "theme",
+  "description": "Law, guilt, punishment and whether justice is done"
+ },
+ {
+  "name": "slow burn",
+  "facet": "tone",
+  "description": "Patient build-up that pays off late"
+ },
+ {
+  "name": "dark and bleak",
+  "facet": "tone",
+  "description": "Grim, harsh, little comfort"
+ },
+ {
+  "name": "hopeful",
+  "facet": "tone",
+  "description": "Optimistic; light wins out"
+ },
+ {
+  "name": "whimsical",
+  "facet": "tone",
+  "description": "Playful, quirky and light on its feet"
+ },
+ {
+  "name": "melancholic",
+  "facet": "tone",
+  "description": "Wistful, sad and reflective"
+ },
+ {
+  "name": "tense",
+  "facet": "tone",
+  "description": "Sustained suspense and dread"
+ },
+ {
+  "name": "funny",
+  "facet": "tone",
+  "description": "Built to make you laugh"
+ },
+ {
+  "name": "cozy",
+  "facet": "tone",
+  "description": "Warm, low-stakes and comforting"
+ },
+ {
+  "name": "epic",
+  "facet": "tone",
+  "description": "Vast scope, high stakes, big canvas"
+ },
+ {
+  "name": "unsettling",
+  "facet": "tone",
+  "description": "Eerie, uncanny, gets under the skin"
+ },
+ {
+  "name": "cerebral",
+  "facet": "tone",
+  "description": "Idea-driven; asks you to think"
+ },
+ {
+  "name": "heartfelt",
+  "facet": "tone",
+  "description": "Sincere and emotionally open"
+ },
+ {
+  "name": "satirical",
+  "facet": "tone",
+  "description": "Mocks its targets to make a point"
+ },
+ {
+  "name": "near future",
+  "facet": "setting",
+  "description": "A recognisable world a few decades on"
+ },
+ {
+  "name": "deep space",
+  "facet": "setting",
+  "description": "Starships, other planets, far-future space"
+ },
+ {
+  "name": "post-apocalyptic",
+  "facet": "setting",
+  "description": "After civilisation has fallen"
+ },
+ {
+  "name": "secondary fantasy world",
+  "facet": "setting",
+  "description": "An invented world with its own history and rules"
+ },
+ {
+  "name": "historical setting",
+  "facet": "setting",
+  "description": "A real past era, rendered with period detail"
+ },
+ {
+  "name": "small town",
+  "facet": "setting",
+  "description": "A close-knit or claustrophobic small community"
+ },
+ {
+  "name": "city life",
+  "facet": "setting",
+  "description": "The texture of a big city"
+ },
+ {
+  "name": "dystopia",
+  "facet": "setting",
+  "description": "An oppressive society, usually controlled from above"
+ },
+ {
+  "name": "alternate history",
+  "facet": "setting",
+  "description": "Our past, changed at a turning point"
+ },
+ {
+  "name": "wilderness",
+  "facet": "setting",
+  "description": "Remote, untamed landscapes"
+ },
+ {
+  "name": "school or academy",
+  "facet": "setting",
+  "description": "Schools, universities and training grounds"
+ },
+ {
+  "name": "mythic and folkloric",
+  "facet": "setting",
+  "description": "Gods, myths, legends and folklore"
+ },
+ {
+  "name": "cyberpunk",
+  "facet": "setting",
+  "description": "High tech, low life, corporate-run cities"
+ },
+ {
+  "name": "contemporary everyday",
+  "facet": "setting",
+  "description": "Ordinary present-day life"
+ },
+ {
+  "name": "unreliable narrator",
+  "facet": "style",
+  "description": "The storyteller cannot be fully trusted"
+ },
+ {
+  "name": "nonlinear structure",
+  "facet": "style",
+  "description": "Told out of order, in loops or fragments"
+ },
+ {
+  "name": "ensemble cast",
+  "facet": "style",
+  "description": "Many protagonists sharing the spotlight"
+ },
+ {
+  "name": "rich worldbuilding",
+  "facet": "style",
+  "description": "A deeply realised world is a main attraction"
+ },
+ {
+  "name": "character-driven",
+  "facet": "style",
+  "description": "Driven by people and their inner lives more than plot"
+ },
+ {
+  "name": "twisty plot",
+  "facet": "style",
+  "description": "Reversals and reveals that reframe what came before"
+ },
+ {
+  "name": "minimalist",
+  "facet": "style",
+  "description": "Spare, restrained, says a lot with little"
+ },
+ {
+  "name": "lyrical",
+  "facet": "style",
+  "description": "Beautiful, poetic use of language, sound or image"
+ },
+ {
+  "name": "fast-paced",
+  "facet": "style",
+  "description": "Momentum and propulsion; hard to put down"
+ },
+ {
+  "name": "atmospheric",
+  "facet": "style",
+  "description": "Mood and sense of place carry the experience"
+ },
+ {
+  "name": "puzzle-box mystery",
+  "facet": "style",
+  "description": "A central mystery the audience pieces together"
+ },
+ {
+  "name": "morally grey lead",
+  "facet": "style",
+  "description": "A protagonist who does bad things for understandable reasons"
+ },
+ {
+  "name": "science fiction",
+  "facet": "genre",
+  "description": "Speculative ideas grounded in science or technology"
+ },
+ {
+  "name": "fantasy",
+  "facet": "genre",
+  "description": "Magic, the impossible, invented worlds"
+ },
+ {
+  "name": "horror",
+  "facet": "genre",
+  "description": "Designed to frighten or disturb"
+ },
+ {
+  "name": "mystery",
+  "facet": "genre",
+  "description": "A puzzle or crime to be solved"
+ },
+ {
+  "name": "thriller",
+  "facet": "genre",
+  "description": "Danger, pursuit and high-stakes suspense"
+ },
+ {
+  "name": "historical fiction",
+  "facet": "genre",
+  "description": "Fiction set in a real past"
+ },
+ {
+  "name": "romance genre",
+  "facet": "genre",
+  "description": "A love story at the centre, with an emotionally satisfying end"
+ },
+ {
+  "name": "comedy",
+  "facet": "genre",
+  "description": "Humour is the point"
+ },
+ {
+  "name": "drama",
+  "facet": "genre",
+  "description": "Serious, realistic emotional conflict"
+ },
+ {
+  "name": "adventure",
+  "facet": "genre",
+  "description": "Journeys, quests and action"
+ },
+ {
+  "name": "nonfiction",
+  "facet": "genre",
+  "description": "True stories, history, science, ideas"
+ },
+ {
+  "name": "literary fiction",
+  "facet": "genre",
+  "description": "Prose-focused fiction about the human condition"
+ },
+ {
+  "name": "open world",
+  "facet": "medium",
+  "description": "A game world explored freely"
+ },
+ {
+  "name": "roguelike",
+  "facet": "medium",
+  "description": "Games built on runs, permadeath and randomised content"
+ },
+ {
+  "name": "concept album",
+  "facet": "medium",
+  "description": "An album built around one story or idea"
+ },
+ {
+  "name": "miniseries",
+  "facet": "medium",
+  "description": "A short, self-contained series"
+ },
+ {
+  "name": "graphic novel",
+  "facet": "medium",
+  "description": "A long-form comic"
+ },
+ {
+  "name": "animation",
+  "facet": "medium",
+  "description": "Animated rather than live action"
+ },
+ {
+  "name": "narrative-driven game",
+  "facet": "medium",
+  "description": "A game where story is the main draw"
+ }
+]
